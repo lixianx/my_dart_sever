@@ -14,6 +14,7 @@ Future<void> main() async {
   // If the "PORT" environment variable is set, listen to it. Otherwise, 8080.
   // https://cloud.google.com/run/docs/reference/container-contract#port
   final port = int.parse(Platform.environment['PORT'] ?? '8080');
+  //环境变量 export PORT=38080, PORT=38080 dart run...
 
   // See https://pub.dev/documentation/shelf/latest/shelf/Cascade-class.html
   final cascade = Cascade()
@@ -50,7 +51,10 @@ final _router = shelf_router.Router()
     (request) => Response.ok(DateTime.now().toUtc().toIso8601String()),
   )
   ..get('/info.json', _infoHandler)
-  ..get('/sum/<a|[0-9]+>/<b|[0-9]+>', _sumHandler);
+  ..get('/sum/<a|[0-9]+>/<b|[0-9]+>', _sumHandler)
+  ..get('/sum/<a|[0-9]+>/<b|[0-9]+>/<c|[0-9]+>', _triplesum);
+
+//在CND计算
 
 Response _helloWorldHandler(Request request) => Response.ok('Hello, World!');
 
@@ -66,6 +70,19 @@ Response _sumHandler(Request request, String a, String b) {
   final bNum = int.parse(b);
   return Response.ok(
     _jsonEncode({'a': aNum, 'b': bNum, 'sum': aNum + bNum}),
+    headers: {
+      ..._jsonHeaders,
+      'Cache-Control': 'public, max-age=604800, immutable',
+    },
+  );
+}
+
+Response _triplesum(Request request, String a, String b, String c) {
+  final aNum = int.parse(a);
+  final bNum = int.parse(b);
+  final cNum = int.parse(c);
+  return Response.ok(
+    _jsonEncode({'a': aNum, 'b': bNum, 'c':cNum,'sum': aNum + bNum + cNum}),
     headers: {
       ..._jsonHeaders,
       'Cache-Control': 'public, max-age=604800, immutable',
