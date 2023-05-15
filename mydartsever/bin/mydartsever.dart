@@ -13,7 +13,7 @@ import 'package:shelf_static/shelf_static.dart' as shelf_static;
 Future<void> main() async {
   // If the "PORT" environment variable is set, listen to it. Otherwise, 8080.
   // https://cloud.google.com/run/docs/reference/container-contract#port
-  final port = int.parse(Platform.environment['PORT'] ?? '8080');
+  final port = int.parse(Platform.environment['PORT'] ?? '6666');
   //环境变量 export PORT=38080, PORT=38080 dart run...
 
   // See https://pub.dev/documentation/shelf/latest/shelf/Cascade-class.html
@@ -52,7 +52,8 @@ final _router = shelf_router.Router()
   )
   ..get('/info.json', _infoHandler)
   ..get('/sum/<a|[0-9]+>/<b|[0-9]+>', _sumHandler)
-  ..get('/sum/<a|[0-9]+>/<b|[0-9]+>/<c|[0-9]+>', _triplesum);
+  ..get('/sum/<a|[0-9]+>/<b|[0-9]+>/<c|[0-9]+>', _triplesum)
+  ..get('/sum/<a>/<b>/<c>', _alphasum);
 
 //在CND计算
 
@@ -82,7 +83,18 @@ Response _triplesum(Request request, String a, String b, String c) {
   final bNum = int.parse(b);
   final cNum = int.parse(c);
   return Response.ok(
-    _jsonEncode({'a': aNum, 'b': bNum, 'c':cNum,'sum': aNum + bNum + cNum}),
+    _jsonEncode({'a': aNum, 'b': bNum, 'c': cNum, 'sum': aNum + bNum + cNum}),
+    headers: {
+      ..._jsonHeaders,
+      'Cache-Control': 'public, max-age=604800, immutable',
+    },
+  );
+}
+
+Response _alphasum(Request request, String a, String b) {
+
+  return Response.ok(
+    _jsonEncode({'a': a, 'b': b, 'sum': a + b}),
     headers: {
       ..._jsonHeaders,
       'Cache-Control': 'public, max-age=604800, immutable',
