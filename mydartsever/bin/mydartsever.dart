@@ -13,7 +13,7 @@ import 'package:shelf_static/shelf_static.dart' as shelf_static;
 Future<void> main() async {
   // If the "PORT" environment variable is set, listen to it. Otherwise, 8080.
   // https://cloud.google.com/run/docs/reference/container-contract#port
-  final port = int.parse(Platform.environment['PORT'] ?? '6666');
+  final port = int.parse(Platform.environment['PORT'] ?? '6676');
   //环境变量 export PORT=38080, PORT=38080 dart run...
 
   // See https://pub.dev/documentation/shelf/latest/shelf/Cascade-class.html
@@ -53,7 +53,7 @@ final _router = shelf_router.Router()
   ..get('/info.json', _infoHandler)
   ..get('/sum/<a|[0-9]+>/<b|[0-9]+>', _sumHandler)
   ..get('/sum/<a|[0-9]+>/<b|[0-9]+>/<c|[0-9]+>', _triplesum)
-  ..get('/sum/<a>/<b>/<c>', _alphasum);
+  ..get('/sum/<a>/<b>', _alphasum);
 
 //在CND计算
 
